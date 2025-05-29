@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    /**
+    /**test
      * Display percentage statistics dashboard
      */
     public function percentageStats()
