@@ -6,10 +6,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     protected $fillable = [
         'name',
@@ -92,4 +93,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Course::class, 'course_user', 'user_id', 'course_id')->withTimestamps();
     }
+
+    public function chapters()
+    {
+        return $this->belongsToMany(Chapter::class)->withPivot('quiz_passed')->withTimestamps();
+    }
+    
+public function contracts()
+{
+    return $this->hasMany(Contract::class);
+}
 }

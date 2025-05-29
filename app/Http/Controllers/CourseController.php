@@ -10,6 +10,8 @@ use App\Models\Chapter;
 use App\Models\Lesson;
 use Illuminate\Support\Facades\Http;
 use App\Jobs\TranscribeChapterVideo;
+use App\Jobs\GenerateQuizContentJob;
+
 
 
 class CourseController extends Controller
@@ -170,6 +172,25 @@ class CourseController extends Controller
         return redirect()->route('courses.index')->with('success', 'Course created successfully');
     }
 
+    public function downloadPdf($pdfId)
+    {
+        // اسم الملف المبني على pdfId
+        $fileName = "chapter{$pdfId}.pdf";
+
+        // المسار داخل storage/app/public
+        $filePath = storage_path("app/public/{$fileName}");
+
+        // نتحقّق من وجود الملف
+        if (!file_exists($filePath)) {
+            abort(404, 'PDF not found.');
+        }
+
+        // نبعثو للمستخدم كتحميل
+        return response()->download($filePath, $fileName, [
+            'Content-Type' => 'application/pdf',
+        ]);
+    }
+
 
 
 
@@ -245,10 +266,45 @@ class CourseController extends Controller
     public function show($id)
     {
         $course = Course::findOrFail($id);
-        $chapters = Chapter::where('course_id', $id)->get();
-        $lessons = Lesson::all();
-        return view('courses.show', compact('course',  'chapters', 'lessons'));
+        $chapters = Chapter::where('course_id', $course->id)->get();
+        $lessons = Lesson::whereIn('chapter_id', $chapters->pluck('id'))->get();
+    
+        // Get quiz_passed status for each chapter for the current user
+        $user = auth()->user();
+        $quizStatus = [];
+        foreach ($chapters as $chapter) {
+            $pivot = \App\Models\ChapterUser::where('user_id', $user->id)
+                ->where('chapter_id', $chapter->id)
+                ->first();
+            $quizStatus[$chapter->id] = $pivot && $pivot->quiz_passed ? true : false;
+        }
+    
+        return view('courses.show', compact('course', 'chapters', 'lessons', 'quizStatus','course'));
     }
+
+    public function showquiz($id)
+    {
+        $course = Course::findOrFail($id);
+        $quiz = \Illuminate\Support\Facades\Cache::get('quiz') ?? [];
+        return view('courses.show', compact('course', 'quiz'));
+    }
+    
+    public function launchQuiz(Request $request)
+    {
+        $script = $request->input('script');
+        $id = $request->input('id');
+        \Illuminate\Support\Facades\Log::info("R id:", ['response' => $id ]);
+        \Illuminate\Support\Facades\Log::info("Réponse générée:", ['response' => $script]);
+        GenerateQuizContentJob::dispatchSync($script, $id);
+
+        return redirect()->back()->with('success', 'Quiz généré avec succès');
+    }
+
+
+    
+
+
+
     public function courseDetails($id)
     {
         $chapters = Chapter::where('course_id', $id)->get();
@@ -278,6 +334,20 @@ class CourseController extends Controller
     
         return redirect()->route('courses.show', $course->id)->with('success', 'Course purchased successfully!');
     }
+    public function submitQuiz(Request $request)
+    {
+        $user = auth()->user();
+        $chapterId = $request->input('chapter_id');
+        \Illuminate\Support\Facades\Log::info("Réponse id:", ['response' => $chapterId]);
+        $quizPassed = $request->input('quiz_passed'); // true, false, or null
+    
+        $user->chapters()->syncWithoutDetaching([
+            $chapterId => ['quiz_passed' => $quizPassed]
+        ]);
+    
+        return response()->json(['status' => 'ok']);
+    }
+   
 }
 
 

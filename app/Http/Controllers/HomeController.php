@@ -6,7 +6,7 @@ use App\Models\Course;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Category;
-
+use App\Models\Feedback;
 class HomeController extends Controller
 {
     /**
@@ -31,7 +31,8 @@ class HomeController extends Controller
         $courseCount = Course::count();
         $categories = Category::all(); 
         $courses= Course::all();
-        return view('home', compact('userCount','coachCount','courseCount','categories','courses'));
+        $feedbacks = Feedback::latest()->get(); 
+        return view('home', compact('userCount','coachCount','courseCount','categories','courses','feedbacks'));
 
 
     }
@@ -47,4 +48,10 @@ class HomeController extends Controller
             $courseCount = Course::count();
             return view('about',compact('userCount','coachCount','courseCount'));
         }
+       
+
+      
+
+        
+
 }

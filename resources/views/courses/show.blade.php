@@ -19,12 +19,12 @@
             <div class="mb-2">
                 <span class="badge badge-primary">ADVANCED LEVEL</span>
             </div>
-            <h1 class="course-title">Advanced Web Development Masterclass</h1>
+            <h1 class="course-title">{{$course->title}}</h1>
             <h2 class="video-title">Modern JavaScript Patterns</h2>
             <div class="instructor-info">
                 <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Instructor" class="instructor-avatar">
                 <div class="instructor-details">
-                    <div class="instructor-name">Dr. Sarah Johnson</div>
+                    <div class="instructor-name">{{$course->name_cotcher}}</div>
                     <div class="instructor-title">Senior Web Architect</div>
                 </div>
             </div>
@@ -62,17 +62,21 @@
         <div class="resources">
             <h3 class="section-title">
                 <span><i class="fas fa-paperclip"></i> Lesson Resources</span>
-                <span>3 files</span>
+                <span>{{$chapters->count()}} files</span>
             </h3>
+            @if($chapters->count() > 0)
+            @foreach($chapters as $index => $chapter)
             <div class="resource-item">
                 <div class="resource-icon">
                     <i class="fas fa-file-pdf"></i>
                 </div>
                 <div class="resource-details">
-                    <div class="resource-name">Design Patterns Cheat Sheet</div>
-                    <div class="resource-meta">PDF • 2.4 MB</div>
+                    <div class="resource-name">{{$chapter->title}}</div>
+                    <div class="resource-meta">PDF</div>
                 </div>
-                <button class="download-btn"><i class="fas fa-download"></i></button>
+                <button class="download-btn" onclick="downloadPdf('{{ $chapter->id }}')">
+                    <i class="fas fa-download"></i>
+                </button>
             </div>
             <div class="resource-item">
                 <div class="resource-icon">
@@ -82,7 +86,9 @@
                     <div class="resource-name">Example Code</div>
                     <div class="resource-meta">JS • 1.1 MB</div>
                 </div>
-                <button class="download-btn"><i class="fas fa-download"></i></button>
+                <button class="download-btn" onclick="downloadPdf('{{ $chapter->id }}')">
+                    <i class="fas fa-download"></i>
+                </button>
             </div>
             <div class="resource-item">
                 <div class="resource-icon">
@@ -94,6 +100,12 @@
                 </div>
                 <button class="download-btn"><i class="fas fa-external-link-alt"></i></button>
             </div>
+            @endforeach
+            @else
+            <div class="alert alert-info">
+                No chapters available for this course yet.
+            </div>
+        @endif
         </div>
     </main>
 
@@ -101,10 +113,13 @@
         <div class="chapters-container">
             @if($chapters->count() > 0)
                 @foreach($chapters as $index => $chapter)
-       
                     @php
                     $chapterLessons = $lessons->where('chapter_id', $chapter->id)->sortBy('order');
                     @endphp
+                   
+
+
+
                    
 
 
@@ -113,113 +128,25 @@
 
 
 
+                  
 
 
-                        <div>
-                            <!-- Bouton Test -->
-                        <button id="btnTest" onclick="afficherTest()" style="margin: 50px; padding: 10px 20px; font-size: 18px;">
-                            Test
-                        </button>
-                        
-                        <p>Page normale... texte, images, etc.</p>
-                        
-                        <!-- Modal -->
-                        <div id="modalOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: none; justify-content: center; align-items: center; z-index: 1000;">
-                            <div class="modalContent" id="modalContent" style="background: white; padding: 20px 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.5); max-width: 400px; text-align: left; z-index: 2000;"></div>
-                        </div>
-                        
-                        <!-- Script -->
-                        <script>
-                            const questions = [
-                            {question: 'Chnowa capitale mta Tounes ?', options: ['Sfax', 'Tunis', 'Gafsa'], correctAnswer: 'b'},
-                            {question: 'Chnowa ta3mil fi sabah?', options: ['Travailler', 'Dormir', 'Manger'], correctAnswer: 'a'},
-                            {question: 'Chnowa fi fransa?', options: ['Paris', 'Madrid', 'Roma'], correctAnswer: 'a'}
-                            ];
-                        
-                            function afficherTest() {
-                            document.getElementById("modalOverlay").style.display = "flex";
-                        
-                            const modal = document.getElementById("modalContent");
-                            modal.innerHTML = `
-                                <h3>QCM Test:</h3>
-                                <div id="score"></div>
-                                <form id="testForm">
-                                ${questions.map((q, index) => `
-                                    <div class="question">
-                                    <h4>Question ${index + 1}: ${q.question}</h4>
-                                    ${q.options.map((option, i) => `
-                                        <input type="radio" name="q${index}" value="${String.fromCharCode(97 + i)}"> ${option}<br>
-                                    `).join('')}
-                                    <p id="result${index}"></p>
-                                    </div>
-                                `).join('')}
-                                <br>
-                                <button type="button" id="verifyBtn" onclick="verifierReponses()">Vérifier</button>
-                                </form>
-                            `;
-                            }
-                        
-                            function verifierReponses() {
-                            let score = 0;
-                        
-                            questions.forEach((q, index) => {
-                                const selected = document.querySelector(`input[name="q${index}"]:checked`);
-                                const result = document.getElementById(`result${index}`);
-                        
-                                if (!selected) {
-                                result.textContent = "❌ Choisis une réponse.";
-                                result.style.color = "red";
-                                } else if (selected.value === q.correctAnswer) {
-                                result.textContent = "✅ Correct !";
-                                result.style.color = "green";
-                                score++;
-                                } else {
-                                result.textContent = "❌ Mauvaise réponse.";
-                                result.style.color = "red";
-                                }
-                            });
-                        
-                            const percentage = ((score / questions.length) * 100).toFixed(2);
-                            const scoreDisplay = document.getElementById("score");
-                            scoreDisplay.innerHTML = `<strong>Votre score: ${score} sur ${questions.length} (${percentage}%)</strong>`;
-                        
-                            document.querySelectorAll('input[type="radio"]').forEach(radio => radio.disabled = true);
-                            document.getElementById("verifyBtn").disabled = true;
-                        
-                            const btn = document.getElementById("btnTest");
-                            if (percentage >= 80) {
-                                btn.textContent = `Test Réussi! Vous avez ${score} bonnes réponses!`;
-                                btn.style.backgroundColor = "green";
-                                btn.style.color = "white";
-                                btn.disabled = true;
-                        
-                                // Fermer après 3 secondes
-                                setTimeout(fermerModal, 3000);
-                            } else {
-                                btn.textContent = "Test échoué, essayez encore";
-                                btn.style.backgroundColor = "gray";
-                        
-                                const backBtn = document.createElement('button');
-                                backBtn.textContent = 'Retour';
-                                backBtn.style.marginTop = '20px';
-                                backBtn.style.padding = '10px 20px';
-                                backBtn.style.fontSize = '18px';
-                                backBtn.style.backgroundColor = '#ccc';
-                                backBtn.style.border = 'none';
-                                backBtn.onclick = fermerModal;
-                                document.querySelector('.modalContent').appendChild(backBtn);
-                            }
-                            }
-                        
-                            function fermerModal() {
-                            document.getElementById("modalOverlay").style.display = "none";
-                            }
-                        </script>
-                        
 
 
-                        </div>
-  
+
+
+
+
+
+
+
+
+
+
+
+          
+                
+                
 
 
 
@@ -270,11 +197,63 @@
                                         No lessons available for this chapter
                                     </div>
                                 @endif
+                                <form method="POST" action="{{ route('quiz.launch') }}">
+                                    @csrf
+                                    <input type="hidden" name="script" value="{{ $chapter->script }}">
+                                    <input type="hidden" name="id" value="{{ $chapter->id }}">
+                                    <button
+                                        class="btn w-100 {{ isset($quizStatus[$chapter->id]) && $quizStatus[$chapter->id] ? 'btn-success' : 'btn-primary' }}"
+                                        type="submit"
+                                        id="afficherQuizBtn{{ $chapter->id }}"
+                                        {{ isset($quizStatus[$chapter->id]) && $quizStatus[$chapter->id] ? 'disabled' : '' }}
+                                    >
+                                        @if(isset($quizStatus[$chapter->id]) && $quizStatus[$chapter->id])
+                                            Quiz déjà validé pour ce chapitre.
+                                        @else
+                                            🧠 Générer Quiz
+                                        @endif
+                                    </button>
+                                </form>
+                                
+                                @php
+                                    $quiz = \Illuminate\Support\Facades\Cache::get('quiz');
+                             
+                                $quizId = \Illuminate\Support\Facades\Cache::get('quizId');
+                                @endphp
+                                
+                                
+                                
+                                <!-- Remove the old button completely -->
+                                {{-- <button class="btn btn-primary" id="afficherQuizBtn" onclick="afficherTest()">🧠 Afficher le Quiz</button> --}}
+                                
+                                <!-- Modal toujours ici -->
+                                <div id="modalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000;">
+                                    <div id="modalContent" style="background:white; padding:20px; border-radius:10px; width:80%; max-width:600px; z-index:1001;"></div>
+                                </div>
                             </div>
                         </div>
                     @endif
 
                 @endforeach
+                @if(!empty($quiz))
+                                
+                                    <script>
+                                        alert("🧠 Afficher le Quiz");
+                                        @php
+                                        \Illuminate\Support\Facades\Log::info("Réponse:", ['response' => session('quiz_chapter_id') ]);
+                                        @endphp
+                                        setTimeout(() => {
+                                            afficherTest({{ session('quiz_chapter_id') }}); // يتم عرض الاختبار تلقائيًا بعد الأليرت
+                                            
+                                        }, 100);
+                                    </script>
+                              
+                
+                                @endif
+                @php
+                
+                Cache::forget('quiz');
+            @endphp
             @else
                 <div class="alert alert-info">
                     No chapters available for this course yet.
@@ -295,9 +274,162 @@
     </aside>
 </div>
 
+
+
+      
+                <!-- Ajouter un id pour le bouton -->
+<!-- Ton modal HTML comme avant -->
+
 <script>
+    const questions = @json($quiz);
+    const quizId = @json($quizId);;
+
+
+
+    function downloadPdf(pdfId) {
+        const link = document.createElement('a');
+        link.href = `/download-pdf/${pdfId}`;
+        link.setAttribute('download', '');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+
+    function afficherTest() {
+        if (!questions.length) {
+            alert("⚠️ Quiz non généré. Attends 5 secondes puis recharge.");
+            return;
+        }
+
+        
+
+        document.getElementById("modalOverlay").style.display = "flex";
+        const modal = document.getElementById("modalContent");
+
+
+        
+        modal.innerHTML = `
+            <input type="hidden" id="chapterId" value="${quizId}">
+            <h3 id="testStatus">QCM Test:</h3>
+            <div id="score"></div>
+            <form id="testForm">
+                ${questions.map((q, i) => `
+
+                    <div>
+                        <h4>Question ${i+1}: ${q.question}</h4>
+                        ${q.options.map(opt => `
+                            <label><input type="radio" name="q${i}" value="${opt}"> ${opt}</label><br>
+                        `).join('')}
+                        <p id="result${i}"></p>
+                    </div>
+                `).join('')}
+                <button type="button" id="verifyBtn" onclick="verifierReponses()">Vérifier</button>
+            </form>
+        `;
+        
+    }
+
+    function verifierReponses() {
+    let score = 0;
+
+    questions.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const result = document.getElementById(`result${i}`);
+
+        if (!selected) {
+            result.textContent = "❌ Choisis une réponse.";
+            result.style.color = "red";
+        } else if (selected.value === q.correctAnswer) {
+            result.textContent = "✅ Correct !";
+            result.style.color = "green";
+            score++;
+        } else {
+            result.textContent = "❌ Mauvaise réponse.";
+            result.style.color = "red";
+        }
+    });
+
+    const percent = ((score / questions.length) * 100).toFixed(2);
+    document.getElementById("score").innerHTML = `<strong>Votre score: ${score}/${questions.length} (${percent}%)</strong>`;
+
+    const btn = document.getElementById("afficherQuizBtn"+ quizId);
+
+    if (percent >= 70) {
+        document.getElementById("testStatus").innerHTML = "✅ Test validé !";
+        setTimeout(() => {
+            fermerModal();
+        }, 1000);
+
+        btn.classList.remove("btn-danger");
+        btn.classList.add("btn-success");
+        btn.disabled = true;
+        btn.innerText = "✔️ Test validé";
+
+        // ✅ Appel AJAX vers le controller Laravel
+        fetch('/quiz/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                chapter_id: quizId,
+                quiz_passed: true
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log("✔️ Backend confirmé:", data);
+        })
+        .catch(err => {
+            console.error("❌ Erreur fetch:", err);
+        });
+
+    } else {
+        document.getElementById("testStatus").innerHTML = "❌ Test échoué.";
+        btn.classList.remove("btn-success");
+        btn.classList.add("btn-danger");
+        btn.disabled = false;
+        btn.innerText = "❌ Recommencer Quiz";
+
+        setTimeout(() => {
+            fermerModal();
+        }, 1000);
+
+        fetch('/quiz/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                chapter_id: quizId,
+                quiz_passed: false
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log("✔️ Backend confirmé:", data);
+        })
+        .catch(err => {
+            console.error("❌ Erreur fetch:", err);
+        });
+    }
+}
+
+    function fermerModal() {
+        document.getElementById("modalOverlay").style.display = "none";
+    }
 
     
+
+
+
+
+
+
+
 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -523,6 +655,9 @@ document.addEventListener('DOMContentLoaded', function () {
 @endsection
 @section('styles')
 <style>
+    .w-100 {
+    width: 100% !important;
+}
     :root {
         --primary: #2563eb;
         --primary-dark: #1d4ed8;

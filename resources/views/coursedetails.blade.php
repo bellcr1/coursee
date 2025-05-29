@@ -281,22 +281,22 @@
     
     /* Buttons */
     .btn-primary {
-        background-color: #2d4059;
+        background-color:rgb(227, 144, 19);
         border: none;
         padding: 10px 20px;
     }
     
     .btn-primary:hover {
-        background-color: #1a2a40;
+        background-color:rgb(4, 193, 218);
     }
     
     .btn-outline-secondary {
-        border-color: #2d4059;
-        color: #2d4059;
+        border-color:rgb(246, 133, 28);
+        color:rgb(237, 134, 32);
     }
     
     .btn-outline-secondary:hover {
-        background-color: #2d4059;
+        background-color:rgb(4, 193, 218);
         color: white;
     }
     

@@ -13,10 +13,11 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TranscriptionController;
 
-
+use App\Http\Controllers\ContactController;
 
 
 use App\Models\User;
+use App\Http\Controllers\FeedbackController;
 
 Route::resource('users', UserController::class)->middleware('auth');
 Route::resource('courses', CourseController::class)->middleware('auth');
@@ -101,7 +102,23 @@ Route::post('/courses/{course}/purchase', [App\Http\Controllers\CourseController
 
 
 
-
-
-
+    Route::get('/course/{id}/show', [CourseController::class, 'showquiz'])->name('course.show');
+    Route::post('/quiz/launch', [CourseController::class, 'launchQuiz'])->name('quiz.launch');
+    Route::post('/quiz/submit', [CourseController::class, 'submitQuiz'])->name('quiz.submit');
+    Route::get('/download-pdf/{pdfId}', [CourseController::class, 'downloadPdf'])->name('pdf.download');
     Route::post('/transcribe', [TranscriptionController::class, 'transcribe'])->name('transcribe');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+Route::get('/contracts', [\App\Http\Controllers\Admin\ContractController::class, 'index'])->name('admin.contracts.index');
+    Route::get('/contracts/create', [\App\Http\Controllers\Admin\ContractController::class, 'create'])->name('admin.contracts.create');
+    Route::post('/contracts', [\App\Http\Controllers\Admin\ContractController::class, 'store'])->name('admin.contracts.store');
+    Route::delete('/contracts/{contract}', [\App\Http\Controllers\Admin\ContractController::class, 'destroy'])->name('admin.contracts.destroy');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/contacts', [ContactController::class, 'adminIndex'])->name('admin.contacts.index');
+    Route::delete('/admin/contacts/{contact}', [ContactController::class, 'destroy'])->name('admin.contacts.destroy');
+});
+Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+Route::get('/feedback', [FeedbackController::class, 'index'])->name('admin.feedback.index');
+Route::delete('/feedback/{feedback}', [FeedbackController::class, 'destroy'])->name('admin.feedback.destroy');

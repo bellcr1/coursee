@@ -26,178 +26,91 @@
     <section id="courses" class="courses section">
         <div class="container">
             <div class="row">
-                @forelse($courses as $course)
-                <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4" data-aos="zoom-in" data-aos-delay="100">
-                    <div class="course-item position-relative">
-                        <!-- Replace the existing heart overlay div with this -->
-                        <div class="position-relative overflow-hidden">
-                            @if($course->image)
-                                <img src="{{ asset($course->image) }}" class="img-fluid w-100 course-image" alt="{{ $course->title }}">
-                            @else
-                                <img src="home/assets/img/course-default.jpg" class="img-fluid w-100 course-image" alt="Default Course Image">
-                            @endif
-                            
-                            <div class="heart-overlay d-flex align-items-center justify-content-center position-absolute top-0 start-0 w-100 h-100">
-<button type="button" class="btn-favorite" onclick="toggleFavorite(this, '{{ $course->id }}')">
-                                    <i class="bi {{ $course->isFavorited() ? 'bi-heart-fill text-danger' : 'bi-heart' }}"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Update the styles section -->
-                        <style>
-                        .btn-favorite {
-                            background: transparent;
-                            border: none;
-                            padding: 10px;
-                            cursor: pointer;
-                            transition: all 0.3s ease;
-                            align-items: center;
-                            z-index: 10;
-                        }
-                        
-                        .btn-favorite:hover {
-                            transform: scale(1.2);
-                        }
-                        
-                        .btn-favorite i {
-                            font-size: 50px;
-                            
-                            color: rgb(255, 255, 255);
-                            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-                        }
-                        
-                        .btn-favorite i.bi-heart-fille {
-                            color: #dc3535;
-                        }
-                        
-                        .heart-overlay {
-                            position: absolute;
-                            top: 0;
-                            right: 0;
-                            bottom: 0;
-                            left: 0;
-                            background: rgba(0, 0, 0, 0.2);
-                            opacity: 0;
-                            transition: all 0.3s ease;
-                        }
-                        
-                        .course-item:hover .heart-overlay {
-                            opacity: 1;
-                        }
-                        </style>
-                        
-                        <!-- Update the JavaScript section -->
-                        @push('scripts')
-                        <script>
-                        function toggleFavorite(button, courseId) {
-                            fetch(`/favorite/toggle/${courseId}`, {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                    'Content-Type': 'application/json',
-                                    'Accept': 'application/json'
-                                },
-                                credentials: 'same-origin'
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                const icon = button.querySelector('i');
-                                if (data.status === 'added') {
-                                    icon.classList.remove('bi-heart');
-                                    icon.classList.add('bi-heart-fill', 'text-danger');
-                                    // Optional: Show success message
-                                    showToast('Added to favorites');
-                                } else {
-                                    icon.classList.remove('bi-heart-fill', 'text-danger');
-                                    icon.classList.add('bi-heart');
-                                    // Optional: Show remove message
-                                    showToast('Removed from favorites');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                showToast('Error updating favorites', 'error');
-                            });
-                        }
-                        
-                        function showToast(message, type = 'success') {
-                            // You can implement a toast notification here if desired
-                            console.log(message);
-                        }
-                        </script>
-                        @endpush
-                        
-                        <div class="course-content">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <p class="category"> @foreach ($categories as $category)
-                                                    @if ($category->id == $course->category )
-                                                        <td>{{  $category->name }}</td>
-                                                    @endif                                                                        
-                                                @endforeach</p>
-                                <p class="price">${{ number_format($course->price, 2) }}</p>
-                                
-                            </div>
-
-                            <h3>
-                                <a href="{{ route('courses.coursedetails', $course->id) }}">{{ $course->title }}</a>
-                            </h3>
-                            <p class="description">{{ Str::limit($course->description, 100) }}</p>
-                            
-                            <div class="trainer d-flex justify-content-between align-items-center">
-                                <div class="trainer-profile d-flex align-items-center">
-                              
-                                    <a href="" class="trainer-link">{{ $course->name_cotcher }}</a>
-                                </div>
-                                <div class="trainer-rank d-flex align-items-center">
-                                    <i class="bi bi-clock"></i>&nbsp;{{ $course->duration }}h
-                                    @if($course->video)
-                                        &nbsp;&nbsp;
-                                        <i class="bi bi-camera-video"></i>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
+                <!-- Category Section -->
+                <div class="col-lg-3">
+                    <div class="category-sidebar bg-white p-3 rounded shadow-sm mb-4">
+                        <h5 class="mb-3 border-bottom pb-2"><i class="bi bi-list-ul me-2"></i> Categories</h5>
+                        <ul class="nav flex-column">
+                            <li class="nav-item mb-1">
+                                <a class="nav-link {{ !request('category') ? 'active' : '' }}" href="{{ route('courses') }}">
+                                    <i class="bi bi-grid me-2"></i> All Categories
+                                </a>
+                            </li>
+                            @foreach($categories as $category)
+                            <li class="nav-item mb-1">
+                                <a class="nav-link {{ request('category') == $category->id ? 'active' : '' }}" 
+                                   href="{{ route('courses', ['category' => $category->id]) }}">
+                                    <i class="{{ $category->icon }} me-2"></i> {{ $category->name }}
+                                </a>
+                            </li>
+                            @endforeach
+                        </ul>
                     </div>
                 </div>
-                @empty
-                <div class="col-12 text-center py-5">
-                    <div class="alert alert-info">No courses found</div>
+                
+                <!-- Courses Grid -->
+                <div class="col-lg-9">
+                    <div class="row">
+                        @forelse($courses as $course)
+                        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mb-4" data-aos="zoom-in" data-aos-delay="100">
+                            <div class="course-item position-relative">
+                                <div class="position-relative overflow-hidden">
+                                    @if($course->image)
+                                        <img src="{{ asset($course->image) }}" class="img-fluid w-100 course-image" alt="{{ $course->title }}">
+                                    @else
+                                        <img src="home/assets/img/course-default.jpg" class="img-fluid w-100 course-image" alt="Default Course Image">
+                                    @endif
+                                    
+                                    <div class="heart-overlay d-flex align-items-center justify-content-center position-absolute top-0 start-0 w-100 h-100">
+                                        <button type="button" class="btn-favorite" onclick="toggleFavorite(this, '{{ $course->id }}')">
+                                            <i class="bi {{ $course->isFavorited() ? 'bi-heart text-danger' : 'bi-heart' }}"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="course-content">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <p class="category"> 
+                                            @foreach ($categories as $category)
+                                                @if ($category->id == $course->category )
+                                                    {{ $category->name }}
+                                                @endif                                                                        
+                                            @endforeach
+                                        </p>
+                                        <p class="price">${{ number_format($course->price, 2) }}</p>
+                                    </div>
+
+                                    <h3>
+                                        <a href="{{ route('courses.coursedetails', $course->id) }}">{{ $course->title }}</a>
+                                    </h3>
+                                    <p class="description">{{ Str::limit($course->description, 100) }}</p>
+                                    
+                                    <div class="trainer d-flex justify-content-between align-items-center">
+                                        <div class="trainer-profile d-flex align-items-center">
+                                            <a href="" class="trainer-link">{{ $course->name_cotcher }}</a>
+                                        </div>
+                                        <div class="trainer-rank d-flex align-items-center">
+                                            <i class="bi bi-clock"></i>&nbsp;{{ $course->duration }}h
+                                            @if($course->video)
+                                                &nbsp;&nbsp;
+                                                <i class="bi bi-camera-video"></i>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @empty
+                        <div class="col-12 text-center py-5">
+                            <div class="alert alert-info">No courses found</div>
+                        </div>
+                        @endforelse
+                    </div>
                 </div>
-                @endforelse
             </div>
         </div>
     </section>
 </main>
-
-@push('scripts')
-<script>
-function toggleFavorite(button, courseId) {
-    fetch(`/favorite/toggle/${courseId}`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        credentials: 'same-origin'
-    })
-    .then(response => response.json())
-    .then(data => {
-        const icon = button.querySelector('i');
-        if (data.status === 'added') {
-            icon.classList.remove('bi-heart');
-            icon.classList.add('bi-heart-fill', 'text-danger');
-        } else {
-            icon.classList.remove('bi-heart-fill', 'text-danger');
-            icon.classList.add('bi-heart');
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
-</script>
-@endpush
-
 
 <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center">
     <i class="bi bi-arrow-up-short"></i>
@@ -280,7 +193,70 @@ function toggleFavorite(button, courseId) {
 <!-- Main JS File -->
 <script src="home/assets/js/main.js"></script>
 
+@push('scripts')
+<script>
+function toggleFavorite(button, courseId) {
+    fetch(`/favorite/toggle/${courseId}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        const icon = button.querySelector('i');
+        if (data.status === 'added') {
+            icon.classList.remove('bi-heart');
+            icon.classList.add('bi-heart-fill', 'text-danger');
+        } else {
+            icon.classList.remove('bi-heart-fill', 'text-danger');
+            icon.classList.add('bi-heart');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+@endpush
+
 <style>
+    /* Category Section Styles */
+    .category-sidebar {
+        position: sticky;
+        top: 20px;
+        height: fit-content;
+    }
+    
+    .category-sidebar h5 {
+        font-size: 1.1rem;
+        color: #333;
+    }
+    
+    .category-sidebar .nav-link {
+        color: #555;
+        padding: 8px 12px;
+        border-radius: 5px;
+        transition: all 0.2s ease;
+    }
+    
+    .category-sidebar .nav-link:hover {
+        background-color: #f8f9fa;
+        color: #333;
+    }
+    
+    .category-sidebar .nav-link.active {
+        background-color: #f0f5ff;
+        color: #4e54c8;
+        font-weight: 500;
+    }
+    
+    .category-sidebar .nav-link i {
+        width: 20px;
+        text-align: center;
+    }
+    
     /* Course Item Styles */
     .course-item {
         transition: all 0.3s ease;
@@ -296,27 +272,38 @@ function toggleFavorite(button, courseId) {
         transition: all 0.3s ease;
     }
     
-    /* Heart Overlay Styles */
     .heart-overlay {
         background: rgba(0, 0, 0, 0.3);
         opacity: 0;
         transition: all 0.3s ease;
     }
     
-    .heart-icon {
-        font-size: 3rem;
-        color: #fd7e14;
+    .btn-favorite {
+        background: transparent;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
         transition: all 0.3s ease;
-        transform: scale(0.8);
+        align-items: center;
+        z-index: 10;
     }
     
-    /* Hover Effects */
+    .btn-favorite:hover {
+        transform: scale(1.2);
+    }
+    
+    .btn-favorite i {
+        font-size: 50px;
+        color: rgb(255, 255, 255);
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    }
+    
+    .btn-favorite i.bi-heart-fill {
+        color:rgb(233, 152, 38);
+    }
+    
     .course-item:hover .heart-overlay {
         opacity: 1;
-    }
-    
-    .course-item:hover .heart-icon {
-        transform: scale(1);
     }
     
     .course-item:hover .course-image {
@@ -324,7 +311,6 @@ function toggleFavorite(button, courseId) {
         transform: scale(1.03);
     }
     
-    /* Course Content Styles */
     .course-content {
         padding: 1.5rem;
         background: white;
@@ -353,20 +339,5 @@ function toggleFavorite(button, courseId) {
         margin-right: 10px;
     }
 </style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Optional: Add click handler for heart icons
-        const hearts = document.querySelectorAll('.heart-icon');
-        hearts.forEach(heart => {
-            heart.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                this.classList.toggle('bi-heart-fill');
-                this.classList.toggle('bi-heart');
-            });
-        });
-    });
-</script>
 
 @endsection

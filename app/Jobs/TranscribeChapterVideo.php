@@ -46,8 +46,9 @@ class TranscribeChapterVideo implements ShouldQueue
             $data = $response->json();
             $this->chapter->script = $data['text'] ?? null;
             \Log::info("TranscribeChapterVideo: Received transcript, dispatching PDF job.");
+            \Log::info("TranscribeChapterVideo: Received transcript, dispatching PDF job.".$this->chapter->id);
 
-            GeneratePdfJob::dispatch($data['text']);
+            GeneratePdfJob::dispatch($data['text'],$this->chapter->id);
             $this->chapter->save();
         } else {
             \Log::error("TranscribeChapterVideo: Flask server error: " . $response->body());

@@ -1,97 +1,172 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('log/fonts/icomoon/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('log/css/owl.carousel.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('log/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('log/css/style.css') }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>Login</title>
 
-    <title>Login</title>
-  </head>
-  <body>
-  
-  <div class="content">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <img src="{{ asset('log/images/undraw_remotely_2j6y.svg') }}" alt="Image" class="img-fluid">
-        </div>
-        <div class="col-md-6 contents">
-          <div class="row justify-content-center">
-            <div class="col-md-8">
-              <div class="mb-4">
-                <h3>Sign In</h3>
-                <p class="mb-4">Welcome back! Please login to your account.</p>
-              </div>
-              <form method="POST" action="{{ route('login') }}">
-                @csrf
-                <div class="form-group first">
-                  <label for="email">Email</label>
-                  <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                         id="email" name="email" value="{{ old('email') }}" required>
-                  @error('email')
-                    <span class="invalid-feedback" role="alert">
-                      <strong>{{ $message }}</strong>
-                    </span>
-                  @enderror
-                </div>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('log/css/bootstrap.min.css') }}">
 
-                <div class="form-group last mb-4">
-                  <label for="password">Password</label>
-                  <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                         id="password" name="password" required>
-                  @error('password')
-                    <span class="invalid-feedback" role="alert">
-                      <strong>{{ $message }}</strong>
-                    </span>
-                  @enderror
-                </div>
-                
-                <div class="d-flex mb-5 align-items-center">
-                  <label class="control control--checkbox mb-0">
-                    <span class="caption">Remember me</span>
-                    <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}/>
-                    <div class="control__indicator"></div>
-                  </label>
-                  @if (Route::has('password.request'))
-                    <span class="ml-auto">
-                      <a href="{{ route('password.request') }}" class="forgot-pass">Forgot Password</a>
-                    </span>
-                  @endif
-                </div>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(145deg, #fff 50%, #fffbe6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
 
-                <input type="submit" value="Log In" class="btn btn-block btn-primary">
+    .login-box {
+      background: #fff;
+      padding: 50px 40px;
+      border-radius: 18px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px; /* Increased width */
+      text-align: center;
+    }
 
-                <span class="d-block text-left my-4 text-muted">  <a href="{{ route('register') }}">&mdash; or signup here &mdash;</a></span>
-               
-                
-                <div class="social-login">
-                  <a href="#" class="facebook">
-                    <span class="icon-facebook mr-3"></span> 
-                  </a>
-                  <a href="#" class="twitter">
-                    <span class="icon-twitter mr-3"></span> 
-                  </a>
-                  <a href="#" class="google">
-                    <span class="icon-google mr-3"></span> 
-                  </a>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
+    .logo img {
+      width: 90px;
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      font-weight: 600;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #777;
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
+      font-weight: 500;
+      color: #444;
+      text-align: left;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      height: 48px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      padding: 10px 15px;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: #FF7B00;
+      box-shadow: 0 0 0 3px rgba(255, 123, 0, 0.1);
+    }
+
+    .form-check-label {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .forgot-pass {
+      font-size: 0.9rem;
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .forgot-pass:hover {
+      text-decoration: underline;
+    }
+
+    .btn-login {
+      background-color: #FF7B00;
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      width: 100%;
+      margin-top: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-login:hover {
+      background-color: #e66a00;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 123, 0, 0.3);
+    }
+
+    .signup-link {
+      display: block;
+      margin-top: 25px;
+      font-size: 0.95rem;
+      color: #666;
+    }
+
+    .signup-link:hover {
+      color: #333;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-box">
+    <div class="logo">
+      <img src="{{ asset('home/assets/img/logo11.png') }}" alt="Logo">
     </div>
+
+    <h3>Login</h3>
+    <p class="subtitle">Welcome back! Please enter your credentials</p>
+
+    <form method="POST" action="{{ route('login') }}">
+      @csrf
+      <div class="form-group text-start">
+        <label for="email">Email</label>
+        <input type="email" class="form-control @error('email') is-invalid @enderror"
+               id="email" name="email" value="{{ old('email') }}" required>
+        @error('email')
+        <span class="invalid-feedback d-block text-danger"><strong>{{ $message }}</strong></span>
+        @enderror
+      </div>
+
+      <div class="form-group text-start">
+        <label for="password">Password</label>
+        <input type="password" class="form-control @error('password') is-invalid @enderror"
+               id="password" name="password" required>
+        @error('password')
+        <span class="invalid-feedback d-block text-danger"><strong>{{ $message }}</strong></span>
+        @enderror
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="remember" id="remember"
+                 {{ old('remember') ? 'checked' : '' }}>
+          <label class="form-check-label" for="remember">Remember me</label>
+        </div>
+        @if (Route::has('password.request'))
+          <a href="{{ route('password.request') }}" class="forgot-pass">Forgot Password?</a>
+        @endif
+      </div>
+
+      <button type="submit" class="btn btn-login">Login</button>
+
+      <a href="{{ route('register') }}" class="signup-link">— Don't have an account? Sign up —</a>
+    </form>
   </div>
 
   <script src="{{ asset('log/js/jquery-3.3.1.min.js') }}"></script>
   <script src="{{ asset('log/js/popper.min.js') }}"></script>
   <script src="{{ asset('log/js/bootstrap.min.js') }}"></script>
-  <script src="{{ asset('log/js/main.js') }}"></script>
-  </body>
+</body>
 </html>

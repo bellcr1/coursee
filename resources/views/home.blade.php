@@ -400,321 +400,396 @@ h3 {
             </div>
         </div>
     </section><!-- /Why Us Section -->
-   <!-- Testimonials Section -->
-<section id="testimonials" class="testimonials section">
+  <!-- Testimonials Section -->
+<section id="testimonials" class="testimonials py-5 bg-light">
+  <div class="container">
+    
+    <!-- Section Header -->
+    <div class="text-center mb-5">
+      <h2 class="fw-bold mb-3">What Our Students Say</h2>
+      <p class="text-muted">Real feedback from our learning community</p>
+    </div>
 
-  <!-- Section Title with Add Review Button -->
-  <div class="container section-title" data-aos="fade-up">
-    <div class="d-flex justify-content-between align-items-center">
-      <div>
-        <h2>Testimonials</h2>
-        <p>What are they saying</p>
-      </div>
-      <button id="openReviewForm" class="btn btn-primary" style="background-color: #2d4059; border: none;">
-        <i class="bi bi-plus-circle"></i> Add Review
+    <!-- Feedback Toggle -->
+    <div class="text-center mb-4">
+      <button id="openFeedbackForm" class="btn btn-outline-primary">
+        <i class="bi bi-pencil me-2"></i>Share Your Thoughts
       </button>
     </div>
-  </div><!-- End Section Title -->
 
-  <!-- Review Form (Initially Hidden) -->
-  <div id="reviewFormContainer" class="container mb-5" style="display: none;" data-aos="fade-up">
-    <div class="review-form bg-white p-4 rounded shadow">
-      <h4 class="mb-4">Share Your Experience</h4>
-      <form id="testimonialForm">
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <div class="form-group">
-              <label for="reviewName">Your Name</label>
-              <input type="text" class="form-control" id="reviewName" required>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <label for="reviewTitle">Your Title/Role</label>
-              <input type="text" class="form-control" id="reviewTitle" required>
-            </div>
-          </div>
+    <!-- Feedback Form (Hidden) -->
+    <div id="feedbackFormContainer" class="card mx-auto mb-5" style="max-width: 600px; display: none;">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Share Your Experience</h5>
+          <button id="cancelFeedback" class="btn-close"></button>
         </div>
-        
-        <div class="form-group mb-3">
-          <label>Your Rating</label>
-          <div class="rating-stars">
-            <i class="bi bi-star rating-star" data-value="1"></i>
-            <i class="bi bi-star rating-star" data-value="2"></i>
-            <i class="bi bi-star rating-star" data-value="3"></i>
-            <i class="bi bi-star rating-star" data-value="4"></i>
-            <i class="bi bi-star rating-star" data-value="5"></i>
-            <input type="hidden" id="reviewRating" value="0" required>
+        <form action="{{ route('feedback.store') }}" method="POST">
+          @csrf
+          <div class="mb-3">
+            <input type="text" name="name" class="form-control" placeholder="Your Name" required>
           </div>
-        </div>
-        
-        <div class="form-group mb-3">
-          <label for="reviewText">Your Testimonial</label>
-          <textarea class="form-control" id="reviewText" rows="4" required></textarea>
-        </div>
-        
-        <div class="d-flex justify-content-end">
-          <button type="button" id="cancelReview" class="btn btn-outline-secondary me-2">Cancel</button>
-          <button type="submit" class="btn btn-primary" style="background-color: #2d4059; border: none;">Submit Review</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Testimonials Slider -->
-  <div class="container" data-aos="fade-up" data-aos-delay="100">
-    <div class="swiper init-swiper">
-      <script type="application/json" class="swiper-config">
-        {
-          "loop": true,
-          "speed": 600,
-          "autoplay": {
-            "delay": 5000
-          },
-          "slidesPerView": "auto",
-          "pagination": {
-            "el": ".swiper-pagination",
-            "type": "bullets",
-            "clickable": true
-          },
-          "breakpoints": {
-            "320": {
-              "slidesPerView": 1,
-              "spaceBetween": 40
-            },
-            "1200": {
-              "slidesPerView": 2,
-              "spaceBetween": 20
-            }
-          }
-        }
-      </script>
-      <div class="swiper-wrapper">
-
-        <div class="swiper-slide">
-          <div class="testimonial-wrap">
-            <div class="testimonial-item">
-              <img src="home/assets/img/testimonials/testimonials-1.jpg" class="testimonial-img" alt="">
-              <h3>Saul Goodman</h3>
-              <h4>Ceo &amp; Founder</h4>
-              <div class="stars">
-                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-              </div>
-              <p>
-                <i class="bi bi-quote quote-icon-left"></i>
-                <span>Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.</span>
-                <i class="bi bi-quote quote-icon-right"></i>
-              </p>
+          <div class="mb-3">
+            <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+          </div>
+          <div class="mb-3">
+            <div class="rating-stars text-center">
+              @for($i = 1; $i <= 5; $i++)
+                <i class="bi bi-star-fill rating-star mx-1" data-value="{{ $i }}" style="color: #ddd; cursor: pointer;"></i>
+              @endfor
+              <input type="hidden" name="rating" id="feedbackRating" value="0" required>
             </div>
           </div>
-        </div><!-- End testimonial item -->
-
-        <div class="swiper-slide">
-          <div class="testimonial-wrap">
-            <div class="testimonial-item">
-              <img src="home/assets/img/testimonials/testimonials-2.jpg" class="testimonial-img" alt="">
-              <h3>Sara Wilsson</h3>
-              <h4>Designer</h4>
-              <div class="stars">
-                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-              </div>
-              <p>
-                <i class="bi bi-quote quote-icon-left"></i>
-                <span>Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.</span>
-                <i class="bi bi-quote quote-icon-right"></i>
-              </p>
-            </div>
+          <div class="mb-3">
+            <textarea class="form-control" name="message" rows="3" placeholder="Your feedback..." required></textarea>
           </div>
-        </div><!-- End testimonial item -->
-
-        <div class="swiper-slide">
-          <div class="testimonial-wrap">
-            <div class="testimonial-item">
-              <img src="home/assets/img/testimonials/testimonials-3.jpg" class="testimonial-img" alt="">
-              <h3>Jena Karlis</h3>
-              <h4>Store Owner</h4>
-              <div class="stars">
-                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-              </div>
-              <p>
-                <i class="bi bi-quote quote-icon-left"></i>
-                <span>Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.</span>
-                <i class="bi bi-quote quote-icon-right"></i>
-              </p>
-            </div>
-          </div>
-        </div><!-- End testimonial item -->
-
-        <div class="swiper-slide">
-          <div class="testimonial-wrap">
-            <div class="testimonial-item">
-              <img src="home/assets/img/testimonials/testimonials-4.jpg" class="testimonial-img" alt="">
-              <h3>Matt Brandon</h3>
-              <h4>Freelancer</h4>
-              <div class="stars">
-                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-              </div>
-              <p>
-                <i class="bi bi-quote quote-icon-left"></i>
-                <span>Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.</span>
-                <i class="bi bi-quote quote-icon-right"></i>
-              </p>
-            </div>
-          </div>
-        </div><!-- End testimonial item -->
-
-        <div class="swiper-slide">
-          <div class="testimonial-wrap">
-            <div class="testimonial-item">
-              <img src="home/assets/img/testimonials/testimonials-5.jpg" class="testimonial-img" alt="">
-              <h3>John Larson</h3>
-              <h4>Entrepreneur</h4>
-              <div class="stars">
-                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-              </div>
-              <p>
-                <i class="bi bi-quote quote-icon-left"></i>
-                <span>Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.</span>
-                <i class="bi bi-quote quote-icon-right"></i>
-              </p>
-            </div>
-          </div>
-        </div><!-- End testimonial item -->
-
+          <button type="submit" class="btn btn-primary w-100">Submit Feedback</button>
+        </form>
       </div>
-      <div class="swiper-pagination"></div>
+    </div>
+
+<!-- Premium Testimonial Slider with Full Slider Functionality -->
+<section id="testimonials" class="testimonial-section">
+  <div class="container">
+    <div class="section-header">
+     
+      <h2 class="section-title">What People Say</h2>
+    </div>
+
+    <div class="testimonial-slider">
+      <div class="swiper">
+        <div class="swiper-wrapper">
+          @foreach($feedbacks as $feedback)
+          <div class="swiper-slide">
+            <div class="testimonial-card">
+              <div class="rating">
+                @for($i = 1; $i <= 5; $i++)
+                  <i class="bi {{ $i <= $feedback->rating ? 'bi-star-fill' : 'bi-star' }}"></i>
+                @endfor
+              </div>
+              <p class="testimonial-text">"{{ $feedback->message }}"</p>
+              <div class="author">
+                <span class="author-name">{{ $feedback->name }}</span>
+              </div>
+            </div>
+          </div>
+          @endforeach
+        </div>
+        
+        <!-- Custom Arrows -->
+        <div class="swiper-nav">
+          <button class="swiper-button swiper-button-prev">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="swiper-pagination"></div>
+          <button class="swiper-button swiper-button-next">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-</section><!-- /Testimonials Section -->
+</section>
 
 <style>
-  /* Review Form Styles */
-  .review-form {
-    border: 1px solid #e0e0e0;
+  /* Section Styling */
+  .testimonial-section {
+    padding: 80px 0;
+    background:rgb(255, 255, 255);
+    position: relative;
   }
   
-  .rating-stars {
-    font-size: 24px;
-    color: #ddd;
-    cursor: pointer;
+  .section-header {
+    text-align: center;
+    margin-bottom: 60px;
   }
   
-  .rating-star {
-    transition: color 0.2s;
+  .section-subtitle {
+    display: block;
+    color: #58c0f5;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    font-size: 14px;
   }
   
-  .rating-star:hover,
-  .rating-star.active {
+  .section-title {
+    color:rgba(14, 9, 3, 0.95);
+    font-weight: 700;
+    font-size: 2.5rem;
+   
+  }
+  
+  /* Testimonial Card */
+  .testimonial-card {
+    background: rgb(231, 248, 255);
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  }
+  
+  .swiper-slide-active .testimonial-card {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Rating */
+  .rating {
     color: #ffc107;
+    font-size: 20px;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
   }
   
-  /* Testimonial Form Animation */
-  #reviewFormContainer {
+  /* Testimonial Text */
+  .testimonial-text {
+    color: #555;
+    font-size: 18px;
+    line-height: 1.7;
+    margin-bottom: 30px;
+    font-style: italic;
+    position: relative;
+  }
+  
+  /* Author */
+  .author {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: 20px;
+  }
+  
+  .author-name {
+    color: #2d4059;
+    font-weight: 600;
+    font-size: 16px;
+  }
+  
+  /* Slider Container */
+  .testimonial-slider {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 60px;
+  }
+  
+  /* Custom Navigation */
+  .swiper-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .swiper-button {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    color: #2d4059;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .swiper-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg,rgb(191, 234, 255),rgb(1, 15, 35));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 50%;
+  }
+  
+  .swiper-button:hover::after {
+    opacity: 1;
+  }
+  
+  .swiper-button svg {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    z-index: 2;
     transition: all 0.3s ease;
   }
   
-  /* Original Testimonial Styles */
-  .testimonials .testimonial-item {
-    box-sizing: content-box;
-    padding: 30px;
-    margin: 40px 30px;
-    background: #fff;
-    min-height: 320px;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    transition: 0.3s;
+  .swiper-button:hover svg {
+    stroke: white;
+    transform: scale(1.1);
   }
   
-  .testimonials .testimonial-item .stars {
-    margin-bottom: 15px;
-  }
-  
-  .testimonials .testimonial-item .stars i {
-    color: #ffc107;
-    margin: 0 1px;
-  }
-  
-  .testimonials .testimonial-item .testimonial-img {
-    width: 90px;
-    border-radius: 50%;
-    border: 4px solid #fff;
-    margin: 0 auto;
-    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
-  }
-  
-  .testimonials .testimonial-item h3 {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 10px 0 5px 0;
-  }
-  
-  .testimonials .testimonial-item h4 {
-    font-size: 14px;
-    color: #6c757d;
-    margin: 0;
-  }
-  
-  .testimonials .testimonial-item .quote-icon-left,
-  .testimonials .testimonial-item .quote-icon-right {
-    color: #f8d1d3;
-    font-size: 26px;
-  }
-  
-  .testimonials .testimonial-item .quote-icon-left {
-    display: inline-block;
-    left: -5px;
+  .swiper-pagination {
     position: relative;
+    bottom: auto;
+    width: auto;
+    margin: 0 30px;
   }
   
-  .testimonials .testimonial-item .quote-icon-right {
-    display: inline-block;
-    right: -5px;
-    position: relative;
-    top: 10px;
-  }
-  
-  .testimonials .testimonial-item p {
-    font-style: italic;
-    margin: 0 auto 15px auto;
-  }
-  
-  .testimonials .swiper-pagination {
-    margin-top: 20px;
-    position: relative;
-  }
-  
-  .testimonials .swiper-pagination .swiper-pagination-bullet {
-    width: 12px;
-    height: 12px;
-    background-color: #fff;
+  .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background: #d1d1d1;
     opacity: 1;
-    border: 1px solid #2d4059;
+    margin: 0 6px !important;
+    transition: all 0.3s ease;
   }
   
-  .testimonials .swiper-pagination .swiper-pagination-bullet-active {
-    background-color: #2d4059;
+  .swiper-pagination-bullet-active {
+    background: #58c0f5;
+    width: 30px;
+    border-radius: 5px;
+    transform: translateY(-1px);
+  }
+  
+  /* Responsive */
+  @media (max-width: 992px) {
+    .testimonial-slider {
+      padding: 0 40px;
+    }
+    
+    .testimonial-card {
+      padding: 30px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .testimonial-section {
+      padding: 60px 0;
+    }
+    
+    .section-header {
+      margin-bottom: 40px;
+    }
+    
+    .testimonial-slider {
+      padding: 0 20px;
+    }
+    
+    .testimonial-text {
+      font-size: 16px;
+    }
+    
+    .swiper-button {
+      width: 48px;
+      height: 48px;
+    }
+    
+    .swiper-pagination {
+      margin: 0 20px;
+    }
   }
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Toggle review form
-    const openReviewBtn = document.getElementById('openReviewForm');
-    const reviewFormContainer = document.getElementById('reviewFormContainer');
-    const cancelReviewBtn = document.getElementById('cancelReview');
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize Swiper with all slider functionality
+  const testimonialSwiper = new Swiper('.testimonial-slider .swiper', {
+    // Enable looping
+    loop: true,
     
-    openReviewBtn.addEventListener('click', function() {
-      reviewFormContainer.style.display = reviewFormContainer.style.display === 'none' ? 'block' : 'none';
+    // Default slides configuration
+    slidesPerView: 1,
+    spaceBetween: 30,
+    centeredSlides: true,
+    
+    // Auto-play configuration
+    autoplay: {
+      delay: 8000,
+      disableOnInteraction: false,
+    },
+    
+    // Pagination
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true,
+    },
+    
+    // Navigation arrows
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+    
+    // Responsive breakpoints
+    breakpoints: {
+      768: {
+        slidesPerView: 2,
+      },
+      1200: {
+        slidesPerView: 3,
+      }
+    },
+    
+    // Callbacks for active slide effects
+    on: {
+      init: function() {
+        // Add active class to initial active slide
+        document.querySelectorAll('.swiper-slide-active .testimonial-card')[0]?.classList.add('active');
+      },
+      slideChange: function() {
+        // Update active class on slide change
+        document.querySelectorAll('.testimonial-card').forEach(card => {
+          card.classList.remove('active');
+        });
+        document.querySelectorAll('.swiper-slide-active .testimonial-card')[0]?.classList.add('active');
+      },
+      touchStart: function() {
+        // Pause autoplay during touch
+        testimonialSwiper.autoplay.stop();
+      },
+      touchEnd: function() {
+        // Resume autoplay after touch
+        testimonialSwiper.autoplay.start();
+      }
+    }
+  });
+
+  // Pause on hover for better UX
+  const sliderContainer = document.querySelector('.testimonial-slider');
+  sliderContainer.addEventListener('mouseenter', function() {
+    testimonialSwiper.autoplay.stop();
+  });
+  sliderContainer.addEventListener('mouseleave', function() {
+    testimonialSwiper.autoplay.start();
+  });
+});
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Toggle feedback form
+    const openFeedbackBtn = document.getElementById('openFeedbackForm');
+    const feedbackFormContainer = document.getElementById('feedbackFormContainer');
+    const cancelFeedbackBtn = document.getElementById('cancelFeedback');
+    
+    openFeedbackBtn.addEventListener('click', function() {
+      feedbackFormContainer.style.display = feedbackFormContainer.style.display === 'none' ? 'block' : 'none';
     });
     
-    cancelReviewBtn.addEventListener('click', function() {
-      reviewFormContainer.style.display = 'none';
+    cancelFeedbackBtn.addEventListener('click', function() {
+      feedbackFormContainer.style.display = 'none';
     });
     
     // Star rating functionality
     const stars = document.querySelectorAll('.rating-star');
-    const ratingInput = document.getElementById('reviewRating');
+    const ratingInput = document.getElementById('feedbackRating');
     
     stars.forEach(star => {
       star.addEventListener('click', function() {
@@ -733,22 +808,6 @@ h3 {
           }
         });
       });
-    });
-    
-    // Form submission (front-end only for now)
-    document.getElementById('testimonialForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('Thank you for your review!');
-      this.reset();
-      reviewFormContainer.style.display = 'none';
-      
-      // Reset stars
-      stars.forEach(star => {
-        star.classList.remove('active');
-        star.classList.remove('bi-star-fill');
-        star.classList.add('bi-star');
-      });
-      ratingInput.value = '0';
     });
   });
 </script>

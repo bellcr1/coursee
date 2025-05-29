@@ -17,4 +17,9 @@ class Chapter extends Model
     {
         return $this->hasMany(Lesson::class)->orderBy('order');
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withPivot('quiz_passed')->withTimestamps();
+    }
 }

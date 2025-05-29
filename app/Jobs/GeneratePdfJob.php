@@ -15,15 +15,18 @@ class GeneratePdfJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $textToExplain;
+    protected $id;
+
 
     /**
      * Create a new job instance.
      *
      * @param string $textToExplain
      */
-    public function __construct($textToExplain)
+    public function __construct($textToExplain,$id)
     {
         $this->textToExplain = $textToExplain;
+        $this->id = $id;
     }
 
     /**
@@ -114,7 +117,7 @@ Here is the text to explain:
             $pdf->Cell(0, 10, 'Page ' . $pdf->PageNo(), 0, 0, 'C');
 
             // Save PDF
-            $filename = 'scrum_output_' . time() . '.pdf';
+            $filename = 'chapter' . $this->id . '.pdf';
             $path = storage_path('app/public/' . $filename);
             $pdf->Output('F', $path);
 
