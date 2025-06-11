@@ -48,7 +48,7 @@
             <i class="far fa-heart"></i>
             <h3>No favorite courses yet</h3>
             <p>Browse courses and add your favorites here</p>
-            <a href="{{ route('courses.index') }}" class="btn btn-primary">Browse Courses</a>
+            <a href="{{ route('courses') }}" class="btn btn-primary">Browse Courses</a>
           </div>
         @endforelse
       </div>
@@ -81,7 +81,7 @@ function toggleFavorite(courseId, btn) {
                             <i class="far fa-heart"></i>
                             <h3>No favorite courses yet</h3>
                             <p>Browse courses and add your favorites here</p>
-                            <a href="{{ route('courses.index') }}" class="btn btn-primary">Browse Courses</a>
+                            <a href="" class="btn btn-primary">Browse Courses</a>
                         </div>
                     `;
                 }

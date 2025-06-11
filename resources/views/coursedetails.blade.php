@@ -122,20 +122,23 @@
                                 $isPurchased = true;
                             }
                         @endphp
-                        
                         @if ($isPurchased)
                             <div class="course-actions">
                                 <a href="{{ route('course.details', $course->id) }}" class="btn btn-primary w-100 mb-2">Start Course</a>
-                                <button class="btn btn-outline-secondary w-100">Add to Wishlist</button>
-                            </div>
+                              
                         @else
                             @auth
                             <div class="course-actions">
                                 <a href="{{ route('checkout', $course->id) }}" class="btn btn-primary w-100 mb-2">Buy Now</a>
-                                <button class="btn btn-outline-secondary w-100">Add to Wishlist</button>
                             </div>
                             @endauth
                         @endif
+                        <button class="{{ $favoriteboolean ? 'btn btn-success' : 'btn btn-outline-secondary' }} w-100" 
+                        onclick="toggleFavorite(this, '{{ $course->id }}')">
+                        <i class="bi {{ $favoriteboolean ? 'bi-heart-fill text-danger' : 'bi-heart' }} me-2"></i>
+                       <span> {{ $favoriteboolean ? 'Added to Wishlist' : 'Add to Wishlist' }}</span>
+                         </button>
+                </div>
                         
                         
                     </div>
@@ -154,6 +157,69 @@
 
 <!-- Bootstrap Icons CDN -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+
+@push('scripts')
+<script>
+function toggleFavorite(button, courseId) {
+    const icon = button.querySelector('i');
+    const span = button.querySelector('span');
+    const currentText = span.textContent.trim();
+
+    if (currentText === 'Add to Wishlist') {
+        // تغيير إلى "Added"
+        span.textContent = 'Added to Wishlist';
+        icon.classList.remove('bi-heart');
+        icon.classList.add('bi-heart-fill', 'text-danger');
+        button.classList.remove('btn-outline-secondary');
+        button.classList.add('btn-success');
+    } else {
+        // تغيير إلى "Add"
+        span.textContent = 'Add to Wishlist';
+        icon.classList.remove('bi-heart-fill', 'text-danger');
+        icon.classList.add('bi-heart');
+        button.classList.remove('btn-success');
+        button.classList.add('btn-outline-secondary');
+    }
+
+    // ⛓️ API Request
+    fetch(`/favorite/toggle/${courseId}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Server status:", data.status);
+        // مانعملوش حتى تبديل هوني خاطر UI تبدّل قبل
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // لو يصير error نرجّعو الزر كيف كان
+        if (currentState === 'not-added') {
+            button.innerHTML = '<i class="bi bi-heart me-2"></i>Add to Wishlist';
+            button.classList.remove("btn-success");
+            button.classList.add("btn-outline-secondary");
+            button.setAttribute('data-state', 'not-added');
+        } else {
+            button.innerHTML = '<i class="bi bi-heart-fill text-danger me-2"></i>Added to Wishlist';
+            button.classList.remove("btn-outline-secondary");
+            button.classList.add("btn-success");
+            button.setAttribute('data-state', 'added');
+        }
+    });
+}</script>
+@endpush
+
+
+
+
+
+
 
 <style>
     /* Main Layout Styles */

@@ -9,6 +9,11 @@ return [
         'timeout' => env('TRANSCRIPTION_TIMEOUT', 600),
     ],
 
+    'stripe' => [
+        'secret' => env('STRIPE_SECRET'),
+        'key' => env('STRIPE_KEY'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services

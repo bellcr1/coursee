@@ -21,7 +21,7 @@
                     <div class="profile-card text-center p-4 rounded-4 shadow">
                         <div class="profile-image mb-4">
                             @if($user->image)
-                                <img src="{{ asset($user->image) }}" class="img-fluid rounded-circle border-4 border-white shadow" width="300" height="200" alt="{{ $user->name }}">
+                                <img src="{{ asset($user->image) }}" style="height: 325px; object-fit: cover;" class="img-fluid rounded-circle border-4 border-white shadow" alt="{{ $user->name }}">
                             @else
                                 <img src="{{ asset('images/default-profile.jpg') }}" class="img-fluid rounded-circle border-4 border-white shadow" width="300" height="200" alt="Default profile">
                             @endif

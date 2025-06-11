@@ -9,21 +9,12 @@
                 <div class="row d-flex justify-content-center text-center">
                     <div class="col-lg-8">
                         <h1 class="display-5 fw-bold mb-3">Edit Profile</h1>
-                        <p class="text-muted mb-0">Update your coach profile information.</p>
+                        <p class="text-muted mb-0">Update your profile information.</p>
                     </div>
                 </div>
             </div>
         </div>
-        <nav class="breadcrumbs">
-            <div class="container">
-                <ol>
-                    <li><a href="{{ route('home') }}">Home</a></li>
-                    <li><a href="{{ route('trainers') }}">Trainers</a></li>
-                    <li><a href="{{ route('coach.profile', auth()->id()) }}">My Profile</a></li>
-                    <li class="current">Edit Profile</li>
-                </ol>
-            </div>
-        </nav>
+        
     </div>
 
     <section class="section profile-edit">
@@ -59,26 +50,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6 mb-3" >
-                                    <label for="role" class="form-label fw-bold">role</label>
-
-                                    <select name="role" id="role">
-                                        <option value="{{ $user->role }}">{{ $user->role }}</option>
-                                        @if ($user->role == 'Admin')
-                                        <option value="User">User</option>
-                                        <option value="Coach">Coach   </option>
-                                        @elseif ($user->role == 'Coach')
-                                        <option value="User">User</option>
-                                        <option value="Admin">Admin</option>
-                                        @else
-                                        <option value="Coach">Coach   </option>
-                                        <option value="Admin">Admin</option>
-                                        @endif
-
-                                      </select>
-                                    
-                                   
-                                </div>
+                                
                                
 
                                 <div class="mb-4">

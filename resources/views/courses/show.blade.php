@@ -6,7 +6,7 @@
     <main class="content">
         <div class="video-container" id="videoContainer">
             <div class="video-container mb-4">
-                <video id="mainVideo" width="100%" controls class="rounded shadow">
+                <video id="mainVideo" controls width="100%"  class="rounded shadow fixed-video">
                     <source id="videoSource" src="" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
@@ -22,10 +22,18 @@
             <h1 class="course-title">{{$course->title}}</h1>
             <h2 class="video-title">Modern JavaScript Patterns</h2>
             <div class="instructor-info">
-                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Instructor" class="instructor-avatar">
+                @foreach ($coaches as $coach)
+                  @if ($coach->id == $course->user_id )
+                <img src="{{ asset($coach->image) }}" alt="Instructor" class="instructor-avatar">
+                    @endif                                                                        
+                @endforeach  
                 <div class="instructor-details">
                     <div class="instructor-name">{{$course->name_cotcher}}</div>
-                    <div class="instructor-title">Senior Web Architect</div>
+                    @foreach ($categories as $category)
+                        @if ($category->id == $course->category )
+                    <div class="instructor-title">{{  $category->name }}</div>
+                            @endif                                                                        
+                    @endforeach 
                 </div>
             </div>
             <div id="chapterScriptContent" >
@@ -108,11 +116,22 @@
         @endif
         </div>
     </main>
-
+    @php
+    $count = 0;
+    @endphp
     <aside class="sidebar">
         <div class="chapters-container">
             @if($chapters->count() > 0)
                 @foreach($chapters as $index => $chapter)
+
+                    @foreach ($chapteruserCount as $chapteruser)
+                        @if ($chapteruser->chapter_id == $chapter->id)
+                            @php
+                                $count++;
+                                break; // نخرج من اللوب خاطر لقينا الماتش، مانحبوش يعاود على نفس الشابتر
+                            @endphp
+                        @endif
+                    @endforeach
                     @php
                     $chapterLessons = $lessons->where('chapter_id', $chapter->id)->sortBy('order');
                     @endphp
@@ -216,7 +235,7 @@
                                 </form>
                                 
                                 @php
-                                    $quiz = \Illuminate\Support\Facades\Cache::get('quiz');
+                                $quiz = \Illuminate\Support\Facades\Cache::get('quiz');
                              
                                 $quizId = \Illuminate\Support\Facades\Cache::get('quizId');
                                 @endphp
@@ -261,16 +280,27 @@
             @endif
         </div>
     
-
+        @php
+            $percentage = $chapterCount > 0 ? round(($count / $chapterCount) * 100) : 0;
+        @endphp
+       
         <div class="completion-progress">
             <div class="progress-text">
                 <span class="progress-label">Course Progress</span>
-                <span class="progress-percent">42% Complete</span>
+                <span class="progress-percent">{{ $percentage }}% Complete </span>
             </div>
             <div class="progress-bar-container">
-                <div class="progress-bar-fill"></div>
+                <div class="progress-bar-fill" style="width: {{ $percentage }}%">
+                     @if ($percentage == 100)
+                    <a href="{{ route('certificate.create', ['id' => $course->id]) }}" class="btn w-100" style="background: #3173f1" onclick="rout">Afficher Certificate</a>
+                    @endif
+                </div>
             </div>
+           
         </div>
+
+
+        
     </aside>
 </div>
 
@@ -355,7 +385,7 @@
 
     const btn = document.getElementById("afficherQuizBtn"+ quizId);
 
-    if (percent >= 70) {
+    if (percent >= 50) {
         document.getElementById("testStatus").innerHTML = "✅ Test validé !";
         setTimeout(() => {
             fermerModal();
@@ -397,24 +427,7 @@
             fermerModal();
         }, 1000);
 
-        fetch('/quiz/submit', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                chapter_id: quizId,
-                quiz_passed: false
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            console.log("✔️ Backend confirmé:", data);
-        })
-        .catch(err => {
-            console.error("❌ Erreur fetch:", err);
-        });
+       
     }
 }
 
@@ -655,6 +668,15 @@ document.addEventListener('DOMContentLoaded', function () {
 @endsection
 @section('styles')
 <style>
+
+    .fixed-video {
+    width: 100%;
+    height: 480px;
+    display: block;
+    object-fit: cover; /* يملأ الحجم ويقص الزيادة */
+
+}
+
     .w-100 {
     width: 100% !important;
 }
@@ -1333,7 +1355,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     .progress-bar-container {
-        height: 8px;
+        height: 35px;
         background: var(--light-gray);
         border-radius: 4px;
         overflow: hidden;

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
     use AuthenticatesUsers;
@@ -25,7 +25,12 @@ class LoginController extends Controller
             'role' => $user->role
         ]);
 
-        return redirect()->intended($this->redirectPath());
+        if ($user->role === 'Admin') {
+            return redirect()->intended('/stats');
+        }
+    
+        return redirect()->intended('/');
+    
     }
 
     // Override the logout method

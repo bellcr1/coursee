@@ -10,8 +10,9 @@ class TrainerController extends Controller
 {
     public function index()
     {
+        $categories = Category::all(); 
         $coaches = User::where('role', 'coach')->get();
-        return view('trainers', compact('coaches'));
+        return view('trainers', compact('coaches', 'categories'));
     }
 
     public function show($id)

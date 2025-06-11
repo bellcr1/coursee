@@ -164,11 +164,15 @@
             
             <div class="trainer d-flex justify-content-between align-items-center pt-2">
               <div class="trainer-profile d-flex align-items-center">
-                <img src="home/assets/img/trainers/trainer-1-2.jpg" class="rounded-circle me-2" width="30" alt="">
+                @foreach ($coachs as $coach)
+                  @if ($coach->id == $course->user_id )
+                      <img src="{{ asset($coach->image) }}" class="rounded-circle me-2" width="30" alt="">
+                   @endif                                                                        
+                @endforeach   
                 <span class="small">{{ $course->name_cotcher }}</span> <!-- Changed to span and added small -->
               </div>
               <div class="trainer-rank d-flex align-items-center small text-muted">
-                <i class="bi bi-person"></i>&nbsp;50
+                <i class="bi bi-person"></i>&nbsp;{{ $course->purchase_count}}
                 &nbsp;&nbsp;
                 <i class="bi bi-heart"></i>&nbsp;65
               </div>
@@ -332,6 +336,12 @@ h3 {
                         <p>Trainers</p>
                     </div>
                 </div><!-- End Stats Item -->
+                <div class="col-lg-3 col-md-6">
+                  <div class="stats-item text-center w-100 h-100">
+                      <span data-purecounter-start="0" data-purecounter-end="{{ $categoryCount }}" data-purecounter-duration="1" class="purecounter"></span>
+                      <p>Category</p>
+                  </div>
+              </div><!-- End Stats Item -->
             </div>
         </div>
     </section><!-- /Counts Section -->
@@ -411,12 +421,13 @@ h3 {
     </div>
 
     <!-- Feedback Toggle -->
+    @auth
+
     <div class="text-center mb-4">
       <button id="openFeedbackForm" class="btn btn-outline-primary">
         <i class="bi bi-pencil me-2"></i>Share Your Thoughts
       </button>
     </div>
-
     <!-- Feedback Form (Hidden) -->
     <div id="feedbackFormContainer" class="card mx-auto mb-5" style="max-width: 600px; display: none;">
       <div class="card-body p-4">
@@ -427,10 +438,10 @@ h3 {
         <form action="{{ route('feedback.store') }}" method="POST">
           @csrf
           <div class="mb-3">
-            <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+            <input type="text" name="name" class="form-control" placeholder="Your Name" value="{{ Auth::user()->name }}" readonly>
           </div>
           <div class="mb-3">
-            <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+            <input type="email" name="email" class="form-control" placeholder="Your Email" value="{{ Auth::user()->email }}" readonly>
           </div>
           <div class="mb-3">
             <div class="rating-stars text-center">
@@ -447,6 +458,7 @@ h3 {
         </form>
       </div>
     </div>
+    @endauth
 
 <!-- Premium Testimonial Slider with Full Slider Functionality -->
 <section id="testimonials" class="testimonial-section">
@@ -471,11 +483,87 @@ h3 {
               <div class="author">
                 <span class="author-name">{{ $feedback->name }}</span>
               </div>
+              @if(Auth::id() === $feedback->user_id)
+              <a href="?edit={{ $feedback->id }}" class="btn btn-warning btn-sm">Modifier</a>            
+               @endif
             </div>
           </div>
           @endforeach
         </div>
+
+        @if(request('edit') && $feedbacks->where('id', request('edit'))->first())
+    @php
+        $feedbackToEdit = $feedbacks->where('id', request('edit'))->first();
+    @endphp
+
+@if(Auth::id() == $feedbackToEdit->user_id)
+    <div class="card mt-4">
+        <div class="card-header">Modifier ton feedback</div>
+        <div class="card-body">
+            <form action="{{ route('feedback.update', $feedbackToEdit->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                <div class="mb-3">
+                    <input type="text" name="name" class="form-control" value="{{ Auth::user()->name }}" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <input type="email" name="email" class="form-control" value="{{ Auth::user()->email }}" readonly>
+                </div>
+
+                <div class="mb-3">
+                  <div class="rating-stars text-center" id="editRatingStars">
+                    @for($i = 1; $i <= 5; $i++)
+                      <i class="bi bi-star-fill rating-star mx-1 {{ $feedbackToEdit->rating >= $i ? 'text-warning' : 'text-secondary' }}" 
+                         data-value="{{ $i }}" 
+                         style="cursor: pointer;"></i>
+                    @endfor
+                    <!-- هام: خلي الـ input داخل نفس الـ div -->
+                    <input type="hidden" name="rating" id="editRating" value="{{ $feedbackToEdit->rating }}" required>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                    <textarea class="form-control" name="message" rows="3" required>{{ $feedbackToEdit->message }}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Modifier Feedback</button>
+            </form>
+        </div>
+    </div>
+@endif
+@endif
         
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const stars = document.querySelectorAll('#editRatingStars .rating-star');
+    const ratingInput = document.getElementById('editRating');
+  
+    stars.forEach(star => {
+      star.addEventListener('click', function () {
+        const rating = this.getAttribute('data-value');
+        ratingInput.value = rating;
+  
+        stars.forEach(s => {
+          if (s.getAttribute('data-value') <= rating) {
+            s.classList.add('text-warning');
+            s.classList.remove('text-secondary');
+          } else {
+            s.classList.remove('text-warning');
+            s.classList.add('text-secondary');
+          }
+        });
+  
+        // Debug pour vérifier que la valeur change bien
+        console.log("Selected Rating: " + rating);
+        console.log("Input Value: " + ratingInput.value);
+      });
+    });
+  });
+  </script>
+
+
         <!-- Custom Arrows -->
         <div class="swiper-nav">
           <button class="swiper-button swiper-button-prev">

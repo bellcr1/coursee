@@ -2,35 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Test Transcription</title>
+    <title>Test PDF</title>
 </head>
 <body>
-    <h1>Transcription Test</h1>
 
-    @if (isset($error))
-        <p style="color:red;">Error: {{ $error }}</p>
-    @endif
+    <div id="certificate">
+        <h1>شهادة نجاح</h1>
+        <p>الاسم: Jihed</p>
+    </div>
 
-    @if (isset($text))
-        <h3>Transcribed Text:</h3>
-        <pre>{{ $text }}</pre>
+    <button id="pdf-button">Télécharger PDF</button>
 
-        @if (isset($metrics))
-            <h4>Metrics:</h4>
-            <ul>
-                <li>Duration: {{ $metrics['audio_duration'] ?? '?' }} sec</li>
-                <li>Total time: {{ $metrics['total_time'] ?? '?' }} sec</li>
-            </ul>
-        @endif
-    @endif
+    <!-- سكربت html2pdf -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
-    <form action="{{ route('transcribe') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <label for="video">Upload video/audio:</label>
-        <input type="file" name="video" accept=".mp3,.mp4,.wav,.m4a" required>
-        <button type="submit">Transcribe</button>
+    <!-- سكربت الزر -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("pdf-button").addEventListener("click", function () {
+                const element = document.getElementById("certificate");
+                html2pdf().from(element).save();
+            });
+        });
+    </script>
 
-
-    </form>
 </body>
 </html>

@@ -1,118 +1,152 @@
 @extends('layouts.app')
 
 @section('content')
- <!-- Checkout Section Begin -->
- <section class="checkout spad">
-        <div class="container">
-           
-            <div class="checkout__form">
-                <h4>Billing Details</h4>
-                <form action="{{ route('courses.purchase', $course->id) }}" method="POST">
-                    @csrf
-                    <div class="row">
-                        <div class="col-lg-8 col-md-6">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="checkout__input">
-                                        <p>Fist Name<span>*</span></p>
-                                        <input type="text">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="checkout__input">
-                                        <p>Last Name<span>*</span></p>
-                                        <input type="text">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="checkout__input">
-                                <p>Country<span>*</span></p>
-                                <input type="text">
-                            </div>
-                            <div class="checkout__input">
-                                <p>Address<span>*</span></p>
-                                <input type="text" placeholder="Street Address" class="checkout__input__add">
-                                <input type="text" placeholder="Apartment, suite, unite ect (optinal)">
-                            </div>
-                            <div class="checkout__input">
-                                <p>Town/City<span>*</span></p>
-                                <input type="text">
-                            </div>
-                            <div class="checkout__input">
-                                <p>Country/State<span>*</span></p>
-                                <input type="text">
-                            </div>
-                            <div class="checkout__input">
-                                <p>Postcode / ZIP<span>*</span></p>
-                                <input type="text">
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="checkout__input">
-                                        <p>Phone<span>*</span></p>
-                                        <input type="text">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="checkout__input">
-                                        <p>Email<span>*</span></p>
-                                        <input type="text">
-                                    </div>
-                                </div>
-                            </div>
-                           
-                            <div class="checkout__input__checkbox">
-                                <label for="diff-acc">
-                                    Ship to a different address?
-                                    <input type="checkbox" id="diff-acc">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </div>
-                            <div class="checkout__input">
-                                <p>Order notes<span>*</span></p>
-                                <input type="text"
-                                    placeholder="Notes about your order, e.g. special notes for delivery.">
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6">
-                            <div class="checkout__order">
-                                <h4>Your Order</h4>
-                                <div class="checkout__order__products">Products <span>Total</span></div>
-                                <ul>
-                                    <li>{{$course->title}} <span>{{$course->price}}</span></li>
-                                </ul>
-                                @php
-                                    $tax = $course->price * 0.15;
-                                    $total = $course->price + $tax;
-                                @endphp
-                                <div class="checkout__order__subtotal">Tax(15%) <span> {{$tax}} </span></div>    
+<!-- Checkout Section Begin -->
+<script src="https://js.stripe.com/v3/"></script>
 
-                                
-                                <div class="checkout__order__total">Total <span>{{$total}}</span></div>
-                               
-                                <div class="checkout__input__checkbox">
-                                    <label for="payment">
-                                        Check Payment
-                                        <input type="checkbox" id="payment">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                                <div class="checkout__input__checkbox">
-                                    <label for="paypal">
-                                        Paypal
-                                        <input type="checkbox" id="paypal">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                                <button type="submit" class="site-btn">PLACE ORDER</button>
-                            </div>
+<section class="checkout spad">
+    <div class="container">
+        <div class="checkout__form">
+            <h4>Billing Details</h4>
+            <form id="payment-form" action="{{ route('courses.purchase', $course->id) }}" method="POST">
+                @csrf
+                <div class="row">
+                    <!-- Billing Details -->
+                    <div class="col-lg-8 col-md-7 mb-4 mb-md-0">
+                        <div class="checkout__input">
+                            <p>Cardholder Name<span>*</span></p>
+                            <input type="text" id="cardholder-name" name="cardholder_name" placeholder="Full name on the card" required>
+                        </div>
+
+                        <!-- Stripe Card Element -->
+                        <div class="checkout__input">
+                            <p>Card Details<span>*</span></p>
+                            <div id="card-element" class="form-control" style="padding:10px; border:1px solid #ccc; border-radius:5px;"></div>
+                            <div id="card-errors" role="alert" style="color:red; margin-top:10px;"></div>
+                            
+                        </div>
+
+                        <div class="checkout__input">
+                            <p>Billing Address<span>*</span></p>
+                            <input type="text" name="billing_address" placeholder="Street, City, Country" required>
+                        </div>
+
+                        <div class="checkout__input__checkbox">
+                            <label for="save_card" class="d-flex align-items-center">
+                                <input type="checkbox" id="save_card" name="save_card" style="margin-right:8px;">
+                                <span class="checkmark"></span>
+                                Save card for future?
+                            </label>
+                        </div>
+
+                        <div class="checkout__input">
+                            <p>Order Notes</p>
+                            <input type="text" name="order_notes" placeholder="Notes about your order, e.g. delivery instructions.">
                         </div>
                     </div>
-                </form>
-            </div>
+
+                    <!-- Order Summary -->
+                    <div class="col-lg-4 col-md-5">
+                        <div class="checkout__order">
+                            <h4>Your Order</h4>
+                            <div class="checkout__order__products">Products <span>Total</span></div>
+                            <ul>
+                                <li>{{ $course->title }} <span>{{ number_format($course->price, 2) }} TND</span></li>
+                            </ul>
+                            @php
+                                $tax = $course->price * 0.15;
+                                $total = $course->price + $tax;
+                            @endphp
+                            <div class="checkout__order__subtotal">Tax (15%) <span>{{ number_format($tax, 2) }} EUR</span></div>
+                            <div class="checkout__order__total">Total <span>{{ number_format($total, 2) }} EUR</span></div>
+                            <input type="text" id="price"  value="{{ number_format($total, 2) }}" hidden>
+
+                            <button id="submit" class="site-btn">PLACE ORDER</button>
+
+
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-    </section>
-    <style>
+    </div>
+</section>
+
+
+
+<script>
+    const stripe = Stripe("pk_test_51RXBLMRjSelEp71V2WHMwbfjeyO474vOX1RxfbdOg4OINxDWpVPnZT8cbEIhcgC8xii7mh1r5LhmbQclaKP7wXTq00F6ner6uw");
+    const elements = stripe.elements();
+    const card = elements.create("card", {
+      hidePostalCode: true
+    });
+    card.mount("#card-element");
+  
+    const form = document.getElementById("payment-form");
+  
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+  
+      const { paymentMethod, error } = await stripe.createPaymentMethod({
+        type: "card",
+        card: card,
+      });
+  
+      if (error) {
+        document.getElementById("payment-result").textContent = "Erreur: " + error.message;
+      } else { 
+        // ✅ نبعثوا paymentMethod.id لل API
+        fetch("/api/payment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}" // إذا تستعمل Blade
+          },
+          body: JSON.stringify({
+            price: {{ $total }}, 
+            payment_method: paymentMethod.id,
+            course_id: {{ $course->id }},
+            user_id:{{ Auth::id() }}
+
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert ("✅ Paiement confirmé !");
+            fetch("{{ route('courses.purchase', $course->id) }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            payment_success: true,
+                            course_id: {{ $course->id }},
+                        })
+                    })
+                    .then(res => {
+                        if (res.ok) {
+                            window.location.href = "{{ route('courses.show', $course->id) }}";
+                        } else {
+                            alert("❌ Erreur lors de l'enregistrement de l'achat.");
+                        }
+                    });
+
+            console.log(data);
+          } else {
+            alert ("❌ Erreur paiement: " + data.error);
+          }
+        })
+        .catch(err => {
+            alert ("❌ Erreur serveur: " + err.message);
+
+        });
+      }
+    });
+  </script>
+  
+<style>
     /* Main Checkout Styles */
     .checkout {
         padding: 80px 0;
@@ -312,8 +346,8 @@
     
     
 </style>
-    <!-- Checkout Section End -->
-    <footer id="footer" class="footer position-relative light-background">
+<!-- Checkout Section End -->
+<footer id="footer" class="footer position-relative light-background">
 
     <div class="container footer-top">
       <div class="row gy-4">

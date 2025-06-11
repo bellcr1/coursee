@@ -126,15 +126,15 @@
 
                 <nav id="navmenu" class="navmenu">
                     <ul>
-                        <li><a href="/">Home</a></li>
-                        <li><a href="{{ route('about') }}" class="nav-link">About</a></li>
-                        <li><a href="/coursesss">Courses</a></li>
-                        <li><a href="/trainers">Trainers</a></li>
-                        <li><a href="/events">Events</a></li>
-                        <li><a href="/pricing">Pricing</a></li>
-                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="/" class="nav-link {{ request()->is('/') ? 'active' : '' }}">Home</a></li>
+                        <li><a href="{{ route('about') }}" class="nav-link {{ request()->is('about') ? 'active' : '' }}">About</a></li>
+                        <li><a href="/AllCourses" class=" nav-link {{ request()->is('AllCourses') ? 'active' : '' }}">Courses</a></li>
+                        <li><a href="/trainers" class="nav-link {{ request()->is('trainers') ? 'active' : '' }}">Trainers</a></li>
+                        <li><a href="/events" class="nav-link {{ request()->is('events') ? 'active' : '' }}">Events</a></li>
+                        <li><a href="/pricing" class="nav-link {{ request()->is('pricing') ? 'active' : '' }}">Pricing</a></li>
+                        <li><a href="/contact" class="nav-link {{ request()->is('contact') ? 'active' : '' }}">Contact</a></li>
                         <li class="nav-item">
-                            <form class="d-flex" action="{{ route('courses') }}" method="GET">
+                            <form class="d-flex" action="{{ route('courses') }}" method="GET" style="margin:0;">
                                 <div class="input-group">
                                     <input class="form-control" type="search" name="search" 
                                            placeholder="Search courses..." 
@@ -205,3 +205,189 @@
     @stack('scripts')
 </body>
 </html>
+
+    <style>
+        /* My Courses Page Specific Styles */
+        .my-courses-container {
+            padding: 40px 0;
+        }
+        
+        .course-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 30px;
+            background: #fff;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .course-img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .course-body {
+            padding: 20px;
+        }
+        
+        .course-title {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .course-instructor {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .progress-container {
+            margin: 15px 0;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #f0f0f0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: #fc8813;
+        }
+        
+        .course-action {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .btn-continue {
+            background: #fc8813;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        
+        .btn-continue:hover {
+            background: #e67a0d;
+            color: white;
+        }
+        
+        .no-courses {
+            text-align: center;
+            padding: 50px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+    </style>
+    
+    <style>
+        /* --- Navbar Enhancements --- */
+        .navmenu {
+            background: #fff;
+            border-radius: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 0.5rem 2rem;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+        .navmenu ul {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .navmenu ul li {
+            position: relative;
+        }
+        .navmenu a, .navmenu .nav-link {
+            color: #222;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: background 0.2s, color 0.2s;
+            text-decoration: none;
+        }
+        .navmenu a:hover, .navmenu .nav-link:hover, .navmenu .dropdown:hover > a {
+            background: #fc8813;
+            color: #fff;
+        }
+        .navmenu .dropdown > a {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .navmenu .dropdown ul {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            min-width: 180px;
+            z-index: 100;
+            padding: 0.5rem 0;
+        }
+        .navmenu .dropdown:hover ul {
+            display: block;
+        }
+        .navmenu .dropdown ul li {
+            width: 100%;
+        }
+        .navmenu .dropdown ul a {
+            color: #222;
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            display: block;
+        }
+        .navmenu .dropdown ul a:hover {
+            background: #fc8813;
+            color: #fff;
+        }
+        .navmenu .mobile-nav-toggle {
+            display: none;
+            font-size: 2rem;
+            margin-left: 1rem;
+            cursor: pointer;
+        }
+        .navmenu .active, .navmenu a.active {
+            background: #fc8813;
+            color: #fff !important;
+        }
+        /* Responsive */
+        @media (max-width: 991px) {
+            .navmenu {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            .navmenu ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .navmenu .mobile-nav-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>

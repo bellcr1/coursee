@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ChapterUser;
 use App\Models\Course;
+use App\Models\Favorite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Category;
 use App\Models\Chapter;
 use App\Models\Lesson;
+use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use App\Jobs\TranscribeChapterVideo;
 use App\Jobs\GenerateQuizContentJob;
@@ -267,7 +270,13 @@ class CourseController extends Controller
     {
         $course = Course::findOrFail($id);
         $chapters = Chapter::where('course_id', $course->id)->get();
+        $chapterCount = Chapter::where('course_id', $course->id)->count();
+        $chapteruserCount = ChapterUser::where('user_id', auth()->id())->get();
         $lessons = Lesson::whereIn('chapter_id', $chapters->pluck('id'))->get();
+        $coaches = User::where('role', 'coach')->get();
+        $categories = Category::all(); 
+
+
     
         // Get quiz_passed status for each chapter for the current user
         $user = auth()->user();
@@ -279,7 +288,7 @@ class CourseController extends Controller
             $quizStatus[$chapter->id] = $pivot && $pivot->quiz_passed ? true : false;
         }
     
-        return view('courses.show', compact('course', 'chapters', 'lessons', 'quizStatus','course'));
+        return view('courses.show', compact('course', 'chapters', 'lessons', 'quizStatus','course', 'coaches', 'categories', 'chapterCount', 'chapteruserCount'));
     }
 
     public function showquiz($id)
@@ -312,8 +321,32 @@ class CourseController extends Controller
         $course = Course::findOrFail($id);
         $categories = Category::all();
         $buycours = Chapter::where('course_id', $id)->get();
-        return view('coursedetails', compact('course', 'categories', 'chapters', 'lessons'));
+        
+        $user = Auth::user();
+        $favoriteboolean = 0;
+        
+        if ($user) {
+            $favoriteExists = Favorite::where('user_id', $user->id)->where('course_id', $id)->first();
+
+            $favoriteboolean = $favoriteExists ? 1 : 0;
+        }
+
+
+
+
+
+
+        return view('coursedetails', compact('course', 'categories', 'chapters', 'lessons','favoriteboolean'));
     }
+
+
+
+
+
+
+
+
+
     public function checkout($id)
     {
         $course = Course::findOrFail($id);

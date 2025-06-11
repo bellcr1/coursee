@@ -62,6 +62,8 @@ class GenerateQuizContentJob implements ShouldQueue
         } catch (\Exception $e) {
             \Log::error("Erreur génération quiz : " . $e->getMessage());
         }
+
     }
+    
 }
 

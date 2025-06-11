@@ -7,17 +7,21 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\GenerateQuizController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\TranscriptionController;
+use App\Http\Controllers\StripeController;
 
 use App\Http\Controllers\ContactController;
-
+use App\Http\Controllers\CertificateController;
 
 use App\Models\User;
 use App\Http\Controllers\FeedbackController;
+
+
 
 Route::resource('users', UserController::class)->middleware('auth');
 Route::resource('courses', CourseController::class)->middleware('auth');
@@ -34,12 +38,15 @@ Route::get('/admin-count', [App\Http\Controllers\UserController::class, 'countAd
 
 // Course User Routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('/coursesss', [CourseController::class, 'call'])->name('courses');
-    Route::post('/coursesss', [CourseController::class, 'store'])->name('courses.store');
-    Route::get('/coursesss/{id}', [CourseController::class, 'show'])->name('courses.show');
+    Route::get('/AllCourses', [CourseController::class, 'call'])->name('courses');
+    Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
+    Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
     Route::get('/course/{course}', [App\Http\Controllers\CourseController::class, 'show'])->name('course.details');
     Route::get('/courses/details/{id}', [CourseController::class, 'courseDetails'])->name('courses.coursedetails');
     Route::get('/checkout/{id}', [CourseController::class, 'checkout'])->name('checkout');
+
+
+    
     Route::middleware(['auth'])->group(function () {
         Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
         Route::post('/favorites/toggle/{course}', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
@@ -76,7 +83,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile/{id}/editadmin', [UserController::class, 'edit'])->name('profile.editadmin');
     Route::put('/profile/{id}', [UserController::class, 'update'])->name('profile.update');
 });
-Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
 
 Route::get('/stats', [App\Http\Controllers\AdminController::class, 'percentageStats'])
@@ -103,7 +109,9 @@ Route::post('/courses/{course}/purchase', [App\Http\Controllers\CourseController
 
 
     Route::get('/course/{id}/show', [CourseController::class, 'showquiz'])->name('course.show');
-    Route::post('/quiz/launch', [CourseController::class, 'launchQuiz'])->name('quiz.launch');
+    Route::post('/quiz/launch', [GenerateQuizController::class, 'generate'])->name('quiz.launch');
+
+
     Route::post('/quiz/submit', [CourseController::class, 'submitQuiz'])->name('quiz.submit');
     Route::get('/download-pdf/{pdfId}', [CourseController::class, 'downloadPdf'])->name('pdf.download');
     Route::post('/transcribe', [TranscriptionController::class, 'transcribe'])->name('transcribe');
@@ -122,3 +130,33 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 Route::get('/feedback', [FeedbackController::class, 'index'])->name('admin.feedback.index');
 Route::delete('/feedback/{feedback}', [FeedbackController::class, 'destroy'])->name('admin.feedback.destroy');
+Route::get('/feedback/{feedback}/edit', [FeedbackController::class, 'edit'])->name('feedback.edit');
+Route::put('/feedback/{feedback}', [FeedbackController::class, 'update'])->name('feedback.update');
+
+Route::get('/certificate/{id}', [CertificateController::class, 'create'])->name('certificate.create');
+Route::get('/certificate/verify/{verify}', [CertificateController::class, 'show'])->name('certificate.show');
+
+
+Route::get('/qr', [CertificateController::class, 'form'])->name('qr.form');
+Route::post('/qr', [CertificateController::class, 'generate'])->name('qr.generate');
+
+Route::get('/admin/payments', [StripeController::class, 'index'])->name('admin.payment.dashbordpayment');
+
+Route::get('/admin/certificate', [CertificateController::class, 'index'])->name('admin.certificate');
+
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+
+
+    Route::get('/test', function () {
+        return view('test');
+    });
+
+
+    Route::get('/stripe/test', function () {
+        return view('stripe');
+    });
+
+
+/*Route::fallback(function () {
+    return redirect('/');
+});*/

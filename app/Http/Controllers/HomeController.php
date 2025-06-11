@@ -29,10 +29,12 @@ class HomeController extends Controller
         $userCount = User::where('role', 'users')->count();
         $coachCount = User::where('role', 'coach')->count();
         $courseCount = Course::count();
+        $categoryCount = Category::count();
         $categories = Category::all(); 
-        $courses= Course::all();
+        $coachs = User::where('role', 'coach')->get();
+        $courses= Course::orderByDesc('purchase_count')->take(3)->get();
         $feedbacks = Feedback::latest()->get(); 
-        return view('home', compact('userCount','coachCount','courseCount','categories','courses','feedbacks'));
+        return view('home', compact('userCount','coachCount','courseCount','categories','courses','feedbacks','categoryCount','coachs'));
 
 
     }

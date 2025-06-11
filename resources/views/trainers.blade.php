@@ -31,7 +31,7 @@
                 <div class="col-lg-4 col-md-6 member" data-aos="fade-up" data-aos-delay="600">
                     <a href="{{ route('coach.profile', $coach->id) }}" class="text-decoration-none">
                         <div class="member-img">
-                            <img src="{{ asset($coach->image) }}" class="img-fluid"  alt="{{ $coach->name }}">
+                            <img src="{{ asset($coach->image) }}" class="img-fluid"  alt="{{ $coach->name }}" style=" height: 250px; object-fit: cover;">
                             <div class="social">
                                 @if($coach->twitter)
                                 <a href="{{ $coach->twitter }}"><i class="bi bi-twitter-x"></i></a>
@@ -50,7 +50,11 @@
                         <div class="member-info text-center">
                             <h4>{{ $coach->name }}</h4>
                             <span>{{ $coach->specialty }}</span>
-                            <p>{{ $coach->description }}</p>
+                            @foreach ($categories as $category)
+                            @if ($category->id == $coach->category )
+                                <span class="badge bg-primary">{{  $category->name }}</span>
+                            @endif                                                                        
+                            @endforeach 
                         </div>
                     </a>
                 </div>

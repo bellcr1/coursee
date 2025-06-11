@@ -23,7 +23,7 @@
                                                 <div class="form-group">
                                                     <label for="name">First Name</label>
                                                     <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                                                        name="name" id="name" value="{{ old('name', $user->name) }}" required>
+                                                        name="name" id="name" value="{{ old('name', $user->name) }}" readonly>
                                                     @error('name')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
@@ -34,7 +34,7 @@
                                                 <div class="form-group">
                                                     <label for="lastname">Last Name</label>
                                                     <input type="text" class="form-control @error('lastname') is-invalid @enderror" 
-                                                        name="lastname" id="lastname" value="{{ old('lastname', $user->lastname) }}" required>
+                                                        name="lastname" id="lastname" value="{{ old('lastname', $user->lastname) }}" readonly>
                                                     @error('lastname')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror

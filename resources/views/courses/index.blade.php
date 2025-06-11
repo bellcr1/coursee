@@ -248,38 +248,44 @@ use Illuminate\Support\Facades\Auth;
                   </a>
                   <ul class="dropdown-menu dropdown-user animated fadeIn">
                     <div class="dropdown-user-scroll scrollbar-outer">
-                      <li>
-                        <div class="user-box">
-                          <div class="avatar-lg">
-                            @if(Auth::user()->image)
-                              <img src="{{ asset(Auth::user()->image) }}" alt="image profile" class="avatar-img rounded">
-                            @else
-                              <img src="../assets/img/profile.jpg" alt="image profile" class="avatar-img rounded">
-                            @endif
-                          </div>
-                          <div class="u-text">
-                            <h4>{{ Auth::user()->name }}</h4>
-                            <p class="text-muted">{{ Auth::user()->email }}</p>
-                          </div>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{{ route('profile.edit', Auth::user()->id) }}">My Profile</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{{ route('logout') }}"
-                          onclick="event.preventDefault();
-                          document.getElementById('logout-form').submit();">
-                          Logout
-                        </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                          @csrf
-                        </form>
-                      </li>
+                        <li>
+                            <div class="user-box">
+                                <div class="avatar-lg">
+                                    @if(Auth::user()->image)
+                                        <img src="{{ asset(Auth::user()->image) }}" alt="image profile" class="avatar-img rounded">
+                                    @else
+                                        <img src="../assets/img/profile.jpg" alt="image profile" class="avatar-img rounded">
+                                    @endif
+                                </div>
+                                <div class="u-text">
+                                    <h4>{{ Auth::user()->name }}</h4>
+                                    <p class="text-muted">{{ Auth::user()->email }}</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ route('profile.edit', Auth::user()->id) }}">
+                              <i class="fa fa-user" aria-hidden="true"></i>  My Profile
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            
+                           
+                            <a class="dropdown-item" href="{{ route('home') }}">
+                                <i class="fa fa-home me-1"></i> Go to Home
+                            </a>
+                            <div class="dropdown-divider"></div>
+            
+                            <a class="dropdown-item" href="{{ route('logout') }}"
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                               <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        </li>
                     </div>
-                  </ul>
-                </li>
-              </ul>
+                </ul>
             </div>
           </nav>
           <!-- End Navbar -->

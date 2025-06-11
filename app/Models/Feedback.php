@@ -13,6 +13,7 @@ class Feedback extends Model
         'name',
         'email',
         'rating',
-        'message'
+        'message', 
+        'user_id'
     ];
 }

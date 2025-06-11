@@ -5,28 +5,43 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Course;
+use App\Http\Resources\CourseResource;
 
 class CourseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        \Log::info('API /api/courses hit');
+        $query = Course::with('categoryRelation');
 
-        $courses = Course::all();
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
 
-        \Log::info('Courses returned', ['count' => $courses->count()]);
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                  ->orWhere('name_cotcher', 'like', "%$search%")
+                  ->orWhereHas('categoryRelation', function($q2) use ($search) {
+                      $q2->where('name', 'like', "%$search%");
+                  });
+            });
+        }
 
-        return response()->json($courses);
+        $courses = $query->get();
+
+        return response()->json([
+            'courses' => CourseResource::collection($courses)
+        ]);
     }
 
     public function show($id)
     {
-        $course = Course::find($id);
+        $course = Course::with('categoryRelation')->find($id);
 
         if (!$course) {
             return response()->json(['message' => 'Course not found'], 404);
         }
 
-        return response()->json($course);
+        return response()->json([
+            'courses' => CourseResource::collection(collect([$course]))
+        ]);
     }
 }

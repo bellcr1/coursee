@@ -56,9 +56,9 @@
                             <div class="course-item position-relative">
                                 <div class="position-relative overflow-hidden">
                                     @if($course->image)
-                                        <img src="{{ asset($course->image) }}" class="img-fluid w-100 course-image" alt="{{ $course->title }}">
+                                        <img src="{{ asset($course->image) }}"  style=" height: 200px; object-fit: cover;" class="img-fluid w-100 course-image" alt="{{ $course->title }}">
                                     @else
-                                        <img src="home/assets/img/course-default.jpg" class="img-fluid w-100 course-image" alt="Default Course Image">
+                                        <img src="home/assets/img/course-default.jpg" style=" height: 200px; object-fit: cover;" class="img-fluid w-100 course-image" alt="Default Course Image">
                                     @endif
                                     
                                     <div class="heart-overlay d-flex align-items-center justify-content-center position-absolute top-0 start-0 w-100 h-100">
